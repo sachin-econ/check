@@ -1,0 +1,28 @@
+Select
+  a.Name Country,
+  a.Continent,
+  a.Region,
+  a.LifeExpectancy,
+  ((a.GNP/a.GNPOld)-1)*100 GNP_Growth,
+  a.LocalName,
+  a.GovernmentForm,
+  a.HeadOfState,
+  a.Code2,
+  a.Population / a.SurfaceArea population_density,
+  CASE when a.IndepYear is NULL then a.GovernmentForm ELSE YEAR(CURDATE()) - a.IndepYear END Years_of_Independence,
+  a.IndepYear,
+b.Name Capital_Name,
+   CASE when b.District like 'Â–%' then 'UNKNOWN' ELSE b.District END District,
+   b.Population City_Pop,
+   c.Official_Languages
+from
+  world.country a,
+  world.city b,
+  (SELECT CountryCode, GROUP_CONCAT(Language) Official_Languages
+   FROM world.countrylanguage
+   where IsOfficial = 'T'
+   GROUP BY CountryCode) c
+  where  a.Code = b.CountryCode
+  and a.Code =c.CountryCode
+  and a.Capital = b.ID
+  
